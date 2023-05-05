@@ -10,7 +10,7 @@ trait BasicFunctions
     public $publicPath = 'public';
     public $viewPath = '/view/';
     public $staticPath = '/static/';
-    protected $basePats = '/html/nasel';
+    protected $basePats = '/php/nasel';
     protected $hashValue="sha512";
      //"haval160,4";
     public $success = 100;
