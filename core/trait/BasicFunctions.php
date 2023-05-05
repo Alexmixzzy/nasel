@@ -12,7 +12,7 @@ trait BasicFunctions
     public $staticPath = '/static/';
     protected $basePats = '/php/nasel';
     protected $hashValue="sha512";
-     //"haval160,4";
+    
     public $success = 100;
 
     public $isDone = true;
