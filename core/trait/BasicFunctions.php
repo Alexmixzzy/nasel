@@ -52,7 +52,7 @@ trait BasicFunctions
         $protocol = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === 0 ? 'https://' : 'http://';
         $scheme = $_SERVER['REQUEST_SCHEME'];
         return $scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        //return phpinfo();
+    
     }
 
     public function fileExist($viewPath=null){
@@ -81,13 +81,7 @@ trait BasicFunctions
         return $newPass;
     }
 
-    public function getUrl2()
-    {
-        //$_SESSION['previous_location']
-        //return phpinfo();
-        //return $_SERVER['output_buffering'];
-        //return $protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === 0 ? 'https://' : 'http://';
-    }
+    
 
     public function sortPass($password, $iteration = 390000, $salt = 16, $algo = "pbkdf2_sha256", $lent = 0)
     {
