@@ -1,0 +1,17 @@
+{
+    "name": "alexmixzzy/nasel",
+    "description": "Investment Platform by reseller web",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Alexmixzzy\\Nasel\\": "core/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alex Chukwuma"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}

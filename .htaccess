@@ -1,0 +1,29 @@
+#order allow,deny
+#eny from all
+#allow from localhost
+DirectoryIndex index.php
+<Ifmodule mod_rewrite.c>
+RewriteEngine On
+
+
+RewriteBase /html/nasel
+#RewriteBase /
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+#RewriteRule ^([^\.]+)$ $1.php 
+RewriteRule ^(.*)$ index.php  [QSA]
+#RewriteRule ^(.+)$ index.php  [QSA,L]
+
+
+
+
+</Ifmodule>
+
+
+
+# 1 ---- Establish a custom 404 file not Found page ----
+
+ ErrorDocument 404 http://localhost/html/nasel/404
+ #ErrorDocument 403 http://localhost/html/nasel/404
