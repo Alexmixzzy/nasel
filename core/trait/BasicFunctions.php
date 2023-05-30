@@ -367,6 +367,30 @@ trait BasicFunctions
         return $string;
     }
 
+    public function cleanUserName( $string ) {
+        $string = str_replace( ' ', '', $string );
+        $string = preg_replace( '/[^A-Za-z0-9]/', '', $string );
+        return $string;
+    }
+
+    public function cleanName( $string ) {
+
+        $string = preg_replace( '/[^A-Za-z0-9\-]/', ' ', $string );
+        $string = preg_replace( '/\d+/u', '', $string );
+        return $string;
+    }
+
+    public function cleanEmail( $string ) {
+        
+        $string = str_replace( ' ', '', $string );
+        $string = preg_replace( '/[^A-Za-z0-9\_]/', '', $string );
+        
+        
+        return $string;
+    }
+
+
+
     public function validateName($string)
     {
 
@@ -374,8 +398,8 @@ trait BasicFunctions
         $string = preg_replace('/\d+/u', '', $string);
         $arr = explode(' ', trim($string));
         
-        if (count($arr) >= 3) {
-            if ((strlen($arr[0]) >= 2) && (strlen($arr[1]) <= 0)) {
+        if (count($arr) >= 2) {
+            if ((strlen($arr[0]) >= 2) && (strlen($arr[1]) >=2)) {
                 return TRUE;
             } else {
                 return FALSE;
@@ -383,6 +407,26 @@ trait BasicFunctions
         } else {
             return FALSE;
         }
+    }
+
+    public function validateNamex($string)
+    {
+
+        $string = preg_replace('/[^A-Za-z0-9\-]/', ' ', $string);
+        $string = preg_replace('/\d+/u', '', $string);
+        $arr = explode(' ', trim($string));
+        
+        // if (count($arr) >= 1) {
+        //     if ((strlen($arr[0]) >= 2) && (strlen($arr[1]) <= 0)) {
+        //         return TRUE;
+        //     } else {
+        //         return FALSE;
+        //     }
+        // } else {
+        //     return FALSE;
+        // }
+
+        var_dump(count($arr));
     }
 
     function arrayDiff($a, $b)

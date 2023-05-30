@@ -46,6 +46,9 @@
 						</div>
 					    <form method="POST" action="" enctype="multipart/form-data">
                         <?php $obj->crfToken(); ?>
+						<?php $rname =   'peter%$# james   pacc(&^%' ;?>
+						<?php //echo  $obj->cleanName('peter%$# james   pacc(&^%') ;?><br>
+						<?php echo $obj->cleanEmail('$james-.8_pas@gmail.com');?>
                         <input type="text" id="fullname" placeholder="fullname" name="fullname">
 					        <input type="text" id="username" name="username" placeholder="Username">
                             <input type="email" id="email" name="email" placeholder="Enter Email">

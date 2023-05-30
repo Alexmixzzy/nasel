@@ -22,8 +22,170 @@ class MiddValidator extends MiddleWare {
         $this->validateError = 'Invalid request or No valid data for validation';
         $this->noMatchValidateError ='Invalid request, please fill up the required data';
     }
-    private function validateUserSignup(){
+    private function validateUserSignup(array $params = [])
+    {
+        $validated = array();
+        $req = array();
+        $req['status'] =  false;
+        $req['msg'] = $this->validateError;
+        $keys = array('signUser'=>'', 'cTokens'=>'','password'=>'','cpassword'=>'','username'=>'','email'=>'','fullname'=>'','ref'=>'');
+        
+        $checkIT = false;
 
+        if (!empty($params)) {
+            if ($_SERVER["REQUEST_METHOD"] === self::METHOD_POST) {
+                if (count($params) === count($keys)) {
+                    $vCrf = $this->validateCrfToken(htmlspecialchars($params['cTokens']));
+                    
+
+                    if ($vCrf) {
+                        foreach ($params as $key => $value) {
+                            if (!array_key_exists($key,$keys)) {
+                                $req['status'] =  false;
+                                $req['msg'] = $this->noMatchValidateError;
+                                $checkIT  = false;
+                                
+                                break;
+                                
+
+                            } else {
+                            
+                        
+                                if ($key === 'username') {
+                                    $newData = $this->cleanUserName(htmlspecialchars(strtolower($value)));
+                                    array_push($validated, $validated[$key] = $newData);
+                                }
+                                if ($key === 'ref') {
+                                    $newData = $this->cleanUserName(htmlspecialchars($value));
+                                    array_push($validated, $validated[$key] = $newData);
+                                }
+                                if ($key === 'email') {
+                                    $newData = $this->cleanUserName(htmlspecialchars(strtolower($value)));
+                                    array_push($validated, $validated[$key] = $newData);
+                                }
+                                if ($key === 'fullname') {
+                                    $newData = $this->cleanName(htmlspecialchars($value));
+                                    array_push($validated, $validated[$key] = $newData);
+                                }
+                                if ($key === 'password') {
+                                    $newData = htmlspecialchars($value);
+                                    
+                                    array_push($validated, $validated[$key] = $newData);
+                                }
+                                if ($key === 'cTokens') {
+                                    
+                                    array_push($validated, $validated[$key] = htmlspecialchars($value) );
+                                }
+                                
+                                if ($key === 'loginUser') {
+                                    array_push($validated, $validated[$key] = '');
+                                }
+                                
+
+                                $checkIT = true;
+                                //continue;
+                                
+
+                            }
+                            # code...
+                        }
+                    } else {
+                        $req['status'] =  false;
+                        $req['msg'] = $this->tokenValidateError;
+                    }
+                } else {
+                    $req['status'] =  false;
+                    $req['msg'] = $this->noMatchValidateError;
+                }
+            }
+        }
+        if($checkIT){
+            $req['status'] = true;
+            $req['data'] = $validated;
+            return $req;
+        }else{
+            $req['status'] = false;
+            $req['data'] = $validated;
+            return $req;
+        }
+        
+    }
+
+    private function validateUserLogin(array $params = [])
+    {
+        $validated = array();
+        $req = array();
+        $req['status'] =  false;
+        $req['msg'] = $this->validateError;
+        $keys = array('loginUser'=>'', 'cTokens'=>'','password'=>'','username'=>'');
+        
+        $checkIT = false;
+
+        if (!empty($params)) {
+            if ($_SERVER["REQUEST_METHOD"] === self::METHOD_POST) {
+                if (count($params) === count($keys)) {
+                    $vCrf = $this->validateCrfToken(htmlspecialchars($params['cTokens']));
+                    
+
+                    if ($vCrf) {
+                        foreach ($params as $key => $value) {
+                            if (!array_key_exists($key,$keys)) {
+                                $req['status'] =  false;
+                                $req['msg'] = $this->noMatchValidateError;
+                                $checkIT  = false;
+                                
+                                break;
+                                
+
+                            } else {
+                            
+                        
+                                if ($key === 'username') {
+                                    $newData = $this->cleanUserName(htmlspecialchars(strtolower($value)));
+                                    array_push($validated, $validated[$key] = $newData);
+                                }
+                                if ($key === 'password') {
+                                    $newData = htmlspecialchars($value);
+                                    
+                                    array_push($validated, $validated[$key] = $newData);
+                                }
+                                if ($key === 'cTokens') {
+                                    
+                                    array_push($validated, $validated[$key] = htmlspecialchars($value) );
+                                }
+                                
+                                if ($key === 'loginUser') {
+                                    array_push($validated, $validated[$key] = '');
+                                }
+                                
+
+                                $checkIT = true;
+                                //continue;
+                                
+
+                            }
+                            # code...
+                        }
+                    } else {
+                        $req['status'] =  false;
+                        $req['msg'] = $this->tokenValidateError;
+                    }
+                } else {
+                    $req['status'] =  false;
+                    $req['msg'] = $this->noMatchValidateError;
+                }
+            }
+        }
+        if($checkIT){
+            $req['status'] = true;
+            $req['data'] = $validated;
+            return $req;
+        }else{
+            $req['status'] = false;
+            $req['data'] = $validated;
+            return $req;
+        }
+        
     }
 
     private function validateUserDeposit(){
@@ -261,6 +423,8 @@ class MiddValidator extends MiddleWare {
             'invesReset'=>$this->validateResetInvest($params),
             'withdrawProfit'=>$this->validateWithdrawFund($params),
             'withdrawCapital'=>$this->validateWithdrawCapital($params),
+            'loginVal'=>$this->validateUserLogin($params),
+            'signupVal'=>$this->validateUserSignup($params),
         };
         } catch (\UnhandledMatchError $e) {
         $match = $this->validateError();

@@ -16,14 +16,6 @@ class AuthController extends BaseController
 
     
 
-    public static function viewsx(array $params = [])
-    {
-        $obj = 'LoginController';
-
-        return self::view('public/login', null, $params, $obj);
-        //echo ' Welcome Home';
-    }
-
     public static function views(array $params = [], $template = 'public/login', $_ext = '.php', $handler = 'AuthController', $handlerPath = 'public/auth/'): void
     {
 
@@ -90,61 +82,52 @@ class AuthController extends BaseController
         if (!empty($params)) {
             if ($_SERVER["REQUEST_METHOD"] === self::METHOD_POST) {
                 if (isset($_POST['loginUser'])) {
-                    $username = htmlspecialchars(strtolower($params['username']));
-                    $pass = htmlspecialchars($params['password']);
-                    $cToken = htmlspecialchars($params['cTokens']);
 
-                    foreach ($params as $key => $val) {
-                        if ($key === "loginuser") {
+                    if (!empty($params['cTokens'])) {
 
-                        } else {
-                            if (empty($val)) {
+                        $midChecker = $this->midware->sanitizeInput('loginVal',$params);
+                        if($midChecker['status']){
+                            $post = $midChecker['data'];
 
-                                $this->msg = $this->error('Please enter  required fields');
-                                $empty = true;
-                            } else {
-                                $empty = false;
-                            }
-                        }
-                        
+                            if(!empty($post['username'])&& !empty($post['password'])){
+                                $username = $post['username'];
+                                $pass = $post['password'];
 
-                    }
+                                if ($this->model->ifExist($username, 'username', $this->model->table) === 1) {
 
-                    if (!$empty && !empty($username) && !empty($pass)) {
-                        
-                        $tokenCRF = $this->midware->validateCrfToken($cToken, 128);
-
-                        if ($tokenCRF) {
-
-                            if ($this->model->ifExist($username, 'username', $this->model->table) === 1) {
-
-                                $passH = $this->make_password($pass);
-                                $login = $this->model->login($username, $pass);
-
-                                if ($login === $this->success) {
-                                    //$this->msg = $this->success();
-                                    $_SESSION[$this->model->sessionUser] = $username;
-                                    $_SESSION[$this->model->sessionEmail] = $this->model->getData($table, 'email', 'username', $username);
-
-                                    // $lastUrl = $this->getAdmin('last_url');
-
-                                    header("location:" . $this->model->dashBoard);
-                                    //header("location:$lastUrl");
-
+                                    
+                                    $login = $this->model->login($username, $pass);
+    
+                                    if ($login === $this->success) {
+                                        
+                                        $_SESSION[$this->model->sessionUser] = $username;
+                                        $_SESSION[$this->model->sessionEmail] = $this->model->getData($table, 'email', 'username', $username);
+    
+                                        // $lastUrl = $this->model->getUser('last_url');
+    
+                                        header("location:" . $this->model->dashBoard);
+                                    
+    
+                                    } else {
+                                        $this->msg = $this->error($login);
+                                    }
+    
                                 } else {
-                                    $this->msg = $this->error($login);
+    
+                                    
+                                    $this->msg = $this->error('Invalid Credentials, retrys');
                                 }
 
-                            } else {
-
-                                
-                                $this->msg = $this->error('Invalid Credentials, retrys');
+                            }else{
+                                $this->msg = $this->error('Please enter  required fields');
                             }
-                        } else {
-                            $this->msg = $this->error('Sorry! we can not veriify your input at the moment ');
+                        }else{
+                            $this->msg = $this->error($midChecker['msg']);
                         }
-
+                    }else{
+                        $this->msg = $this->error('Sorry, we can not verify your input at the  moment');
                     }
+                
 
                 }
             }
@@ -160,6 +143,98 @@ class AuthController extends BaseController
                 if (isset($_POST['signUser'])) {
 
                     if (!empty($params['cTokens'])) {
+                        $midChecker = $this->midware->sanitizeInput('loginVal',$params);
+                        if($midChecker['status']){
+                            $post = $midChecker['data'];
+
+                            foreach ($post as $key => $val) {
+                                if ($key === "signUser" || $key === "ref") {
+                                    
+                                } else {
+                                    if (empty($val)) {
+
+                                        $this->msg = $this->error('Please enter required fields');
+                                        $empty = true;
+                                    } else {
+                                        $empty = false;
+                                    }
+                                }
+                            
+
+                            }
+
+                            if (!$empty) {
+                                
+                                $username =  strtolower($post['username']);
+                                $pass =  $post['password'];
+                                $cpass =  $post['cpassword'];
+                                $email =  strtolower($post['email']);
+                                $ref =  $post['ref'];
+                                $name =  $post['fullname'];
+
+                                $check1 = $this->model->ifExist($username, 'username', $this->model->table);
+                                $check2 = $this->model->ifExist($username, 'email', $this->model->table);
+                                if ($pass === $cpass) {
+                                    $validPass = $this->make_password($pass);
+                                    $userHash = $this->hashUser($username);
+                                    //$newPin = $this->model->genValidatePin($this->model->table, 'pin');
+
+                                    $is_active = true;
+                                    $is_blocked = false;
+                                    $is_restricted = false;
+
+                                    $phoneCode = null;
+                                    $phone = null;
+                                    $email_verified = 0;
+                                    $auto_withdraw = 0;
+                                    $verified = false;
+                                    $userType = 'user';
+                                    $currency = 'USD';
+                                    $address = null;
+                                    $country = null;
+                                    $userIp = null;
+                                    $lastUrl = $this->getUrl();
+                                    $time = $this->dateTime();
+                                    $resetCode = uniqid('fgt_', false);
+                                    $userIp = $this->geo_ip;
+                                    if ($this->is_email($email)) {
+                                        if ($check1 === 0 && $check2 === 0) {
+                                            $fields = $this->model->fetchField($this->model->table);
+
+                                            $values = array(null, $username, $email, $name, $validPass, $userHash, $phoneCode, $phone, $ref, $email_verified, $verified, $userType, $resetCode, $is_blocked, $is_active, $is_restricted, $auto_withdraw, $currency, $country, $address, $userIp, $lastUrl, $time);
+                                            //$values = array(null,$username);
+
+                                            $post = $this->model->postData($this->model->table, $fields, $values);
+
+                                            if ($post === 100) {
+                                                $this->msg = $this->success('Your account has been registered, please activate to login', 'Registration Success!');
+                                            } else {
+                                                $this->msg = $this->error($post);
+                                            }
+
+                                        } else {
+                                            if ($check1 === 1) {
+                                                $this->msg = $this->error('Username is already in use, please change it');
+                                            }
+
+                                            if ($check2 === 1) {
+                                                $this->msg = $this->error('Email is already in use, please change it');
+                                            }
+
+                                        }
+
+                                    } else {
+                                        $this->msg = $this->error('Please use a valid email for your account');
+                                    }
+                                } else {
+                                    $this->msg = $this->error('Your passwords did not match, retry');
+                                }
+
+                            }
+                        }else{
+                            $this->msg = $this->error($midChecker['msg']); 
+                        }
+                        //old 
                         $cToken = htmlspecialchars($params['cTokens']);
                         $tokenCRF = self::$midware->validateCrfToken($cToken, 128);
 
