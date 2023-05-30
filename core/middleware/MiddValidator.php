@@ -60,7 +60,7 @@ class MiddValidator extends MiddleWare {
                                     array_push($validated, $validated[$key] = $newData);
                                 }
                                 if ($key === 'email') {
-                                    $newData = $this->cleanUserName(htmlspecialchars(strtolower($value)));
+                                    $newData = $this->cleanEmail(htmlspecialchars(strtolower($value)));
                                     array_push($validated, $validated[$key] = $newData);
                                 }
                                 if ($key === 'fullname') {

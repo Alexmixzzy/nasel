@@ -409,25 +409,7 @@ trait BasicFunctions
         }
     }
 
-    public function validateNamex($string)
-    {
 
-        $string = preg_replace('/[^A-Za-z0-9\-]/', ' ', $string);
-        $string = preg_replace('/\d+/u', '', $string);
-        $arr = explode(' ', trim($string));
-        
-        // if (count($arr) >= 1) {
-        //     if ((strlen($arr[0]) >= 2) && (strlen($arr[1]) <= 0)) {
-        //         return TRUE;
-        //     } else {
-        //         return FALSE;
-        //     }
-        // } else {
-        //     return FALSE;
-        // }
-
-        var_dump(count($arr));
-    }
 
     function arrayDiff($a, $b)
     {
